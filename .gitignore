@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+.nextflow/
+*.pyc
+.nextflow.log*
+work/
+results/
+test-*/
+Untitled.ipynb

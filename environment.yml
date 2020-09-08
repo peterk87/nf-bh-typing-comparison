@@ -1,0 +1,17 @@
+name: bh-bench-1.0.0
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - art=2016.06.05
+  - bcftools=1.10.2
+  - bedtools=2.29.2
+  - bio_hansel=2.4.0
+  - bowtie2=2.4.1
+  - bwa=0.7.17
+  - python=3.7.8
+  - samtools=1.10
+  - setuptools
+  - ska=1.0
+  - tb-profiler=2.8.12
