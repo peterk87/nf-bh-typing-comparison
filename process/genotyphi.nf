@@ -35,6 +35,7 @@ process GENOTYPHI {
   tuple val(sample_id),
         val(organism),
         val(mincov),
+        val('genotyphi'),
         path('.command.trace'), emit: 'trace'
 
   script:

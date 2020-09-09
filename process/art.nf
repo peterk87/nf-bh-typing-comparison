@@ -21,6 +21,7 @@ process ART {
     -o $out_prefix \\
     --paired \\
     --fcov $coverage \\
+    --minQ ${params.art_min_qscore} \\
     --len ${params.art_read_length} \\
     --mflen ${params.art_mean_fragment_length} \\
     --sdev ${params.art_fragment_length_sdev} \\

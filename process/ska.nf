@@ -88,6 +88,7 @@ process SKA_TYPE_WITH_PROFILE {
   tuple val(sample_id),
         val(organism),
         val(coverage),
+        val('ska_type_with_profile'),
         path('.command.trace'), emit: 'trace'
 
   script:

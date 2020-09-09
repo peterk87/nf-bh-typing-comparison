@@ -56,6 +56,7 @@ summary['mtb_biohansel_mincov'] = params.mtb_biohansel_mincov
 summary['mtb_ska_marker_fastas'] = params.mtb_ska_marker_fastas
 summary['mtb_ska_profile'] = params.mtb_ska_profile
 summary['art_seq_sys'] = params.art_seq_sys
+summary['art_min_qscore'] = params.art_min_qscore
 summary['art_read_length'] = params.art_read_length
 summary['art_mean_fragment_length'] = params.art_mean_fragment_length
 summary['art_fragment_length_sdev'] = params.art_fragment_length_sdev
@@ -100,6 +101,7 @@ include {
   SKA_TYPE_WITH_PROFILE as SKA_TYPE_WITH_PROFILE_MTB
   } from './process/ska'
 include { TB_PROFILER } from './process/tb_profiler'
+include { TRACE_TABLE } from './process/trace'
 
 //=============================================================================
 // MAIN WORKFLOW
@@ -143,4 +145,48 @@ workflow {
     // tb-profiler
     ART_MTB.out | TB_PROFILER
   }
+  if (params.typhi_input && params.mtb_input) {
+    GENOTYPHI.out.trace
+      .mix(
+        SKA_SKETCH_TYPHI.out.trace,
+        SKA_TYPE_WITH_PROFILE_TYPHI.out.trace,
+        SKA_TYPE_NO_PROFILE_TYPHI.out.trace,
+        BH_TYPHI.out.trace,
+        BH_MTB.out.trace,
+        SKA_SKETCH_MTB.out.trace,
+        SKA_TYPE_NO_PROFILE_MTB.out.trace,
+        TB_PROFILER.out.trace)
+      .set { ch_trace }
+  } else if (params.typhi_input && !params.mtb_input) {
+    GENOTYPHI.out.trace
+      .mix(
+        SKA_SKETCH_TYPHI.out.trace,
+        SKA_TYPE_WITH_PROFILE_TYPHI.out.trace,
+        SKA_TYPE_NO_PROFILE_TYPHI.out.trace,
+        BH_TYPHI.out.trace)
+      .set { ch_trace }
+  } else if (params.mtb_input && !params.typhi_input) {
+    BH_MTB.out.trace
+      .mix(
+        SKA_SKETCH_MTB.out.trace,
+        SKA_TYPE_NO_PROFILE_MTB.out.trace,
+        TB_PROFILER.out.trace)
+      .set { ch_trace }
+  } else {
+    exit 1, "Cannot create trace table without any output!"
+  }
+
+  ch_trace.collectFile() { sample_id, organism, coverage, proc_name, trace_file ->
+      ['trace.txt', 
+       """
+       ${trace_file.text}
+       sample_id=${sample_id}
+       organism=${organism}
+       coverage=${coverage}
+       threads=1
+       process_name=${proc_name}
+       @@@
+       """.stripIndent()]
+    } \
+    | TRACE_TABLE
 }
