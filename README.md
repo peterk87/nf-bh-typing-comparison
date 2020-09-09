@@ -146,8 +146,8 @@ $ nextflow run peterk87/nf-bh-typing-comparison \
 
 Rendered table:
 
- | realtime | %cpu | rchar | wchar | syscr | syscw | read_bytes | write_bytes | %mem | vmem | rss | peak_vmem | peak_rss | vol_ctxt | inv_ctxt | sample_id | organism | coverage | threads | process_name
- | -------- | ---- | ----- | ----- | ----- | ----- | ---------- | ----------- | ---- | ---- | --- | --------- | -------- | -------- | -------- | --------- | -------- | -------- | ------- | ------------
+idx | realtime | %cpu | rchar | wchar | syscr | syscw | read_bytes | write_bytes | %mem | vmem | rss | peak_vmem | peak_rss | vol_ctxt | inv_ctxt | sample_id | organism | coverage | threads | process_name
+--- | -------- | ---- | ----- | ----- | ----- | ----- | ---------- | ----------- | ---- | ---- | --- | --------- | -------- | -------- | -------- | --------- | -------- | -------- | ------- | ------------
 0 | 16046 | 813 | 54291000 | 962 | 7019 | 14 | 0 | 4096 | 8 | 541064 | 534916 | 541064 | 534916 | 1 | 2424 | ERR1017040 | typhi | 50 | 1 | ska_type_no_profile
 1 | 10374 | 967 | 491090840 | 13909 | 60232 | 15 | 0 | 20480 | 1 | 728816 | 65852 | 728816 | 65852 | 1 | 797 | ERR360655 | typhi | 50 | 1 | biohansel
 2 | 242764 | 915 | 485007609 | 51706171 | 29873 | 6354 | 0 | 51707904 | 16 | 1059408 | 1053040 | 1059408 | 1053040 | 3 | 26386 | ERR343250 | typhi | 50 | 1 | ska_sketch
