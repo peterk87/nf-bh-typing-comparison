@@ -62,3 +62,49 @@ process GENOTYPHI {
     --output $genotyphi_out
   """
 }
+
+process GENOTYPHI_BWAMEM2 {
+  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/results", 
+             pattern: "*.tsv", 
+             mode: 'copy'
+  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/trace", 
+             pattern: ".command.trace",
+             saveAs: {"${sample_id}-${mincov}X.trace"},
+             mode: 'copy'
+  input:
+  tuple path(input_fasta), 
+        val(organism), 
+        val(mincov),
+        path(reads),
+        path(ref_fasta)
+  output:
+  tuple val(sample_id),
+        path(genotyphi_out), emit: 'results'
+  tuple val(sample_id),
+        val(organism),
+        val(mincov),
+        val('genotyphi_bwamem2'),
+        path('.command.trace'), emit: 'trace'
+
+  script:
+  sample_id = file(input_fasta).getBaseName()
+  ref_id = file(ref_fasta).getBaseName()
+  genotyphi_out = "${sample_id}-${mincov}X-genotyphi.tsv"
+  bam = "${sample_id}.bam"
+  """
+  echo "BWA MEM 2 mapping reads $reads"
+  bwa-mem2 index -p bm2-idx $ref_fasta
+  bwa-mem2 mem \\
+      -t ${task.cpus} \\
+      bm2-idx \\
+      ${reads} \\
+    | samtools view -b -h -O BAM -F4 \\
+    | samtools sort -o $bam
+  samtools index $bam
+  genotyphi.py --mode bam \\
+    --bam $bam \\
+    --ref $ref_fasta \\
+    --ref_id $ref_id \\
+    --output $genotyphi_out
+  """
+}

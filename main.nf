@@ -91,7 +91,11 @@ include {
   BIOHANSEL as BH_TYPHI;
   BIOHANSEL as BH_MTB
   } from './process/biohansel'
-include { BOWTIE2_INDEX; GENOTYPHI } from './process/genotyphi'
+include {
+  BOWTIE2_INDEX;
+  GENOTYPHI;
+  GENOTYPHI_BWAMEM2
+  } from './process/genotyphi'
 include { 
   SKA_SKETCH as SKA_SKETCH_TYPHI;
   SKA_SKETCH as SKA_SKETCH_MTB;
@@ -118,6 +122,8 @@ workflow {
     Channel.fromPath(params.typhi_ref_fasta) | BOWTIE2_INDEX 
     // type with Genotyphi
     ART_TYPHI.out | combine( BOWTIE2_INDEX.out ) | GENOTYPHI
+    // type with Genotyphi using BWA-MEM2 read mapping
+    ART_TYPHI.out | combine(Channel.fromPath(params.typhi_ref_fasta)) | GENOTYPHI_BWAMEM2
     // type with biohansel
     ch_bh_scheme_metadata = Channel.fromPath(params.typhi_biohansel_scheme_fasta) \
         | combine(Channel.fromPath(params.typhi_biohansel_metadata_tsv))
@@ -148,6 +154,7 @@ workflow {
   if (params.typhi_input && params.mtb_input) {
     GENOTYPHI.out.trace
       .mix(
+        GENOTYPHI_BWAMEM2.out.trace,
         SKA_SKETCH_TYPHI.out.trace,
         SKA_TYPE_WITH_PROFILE_TYPHI.out.trace,
         SKA_TYPE_NO_PROFILE_TYPHI.out.trace,
@@ -160,6 +167,7 @@ workflow {
   } else if (params.typhi_input && !params.mtb_input) {
     GENOTYPHI.out.trace
       .mix(
+        GENOTYPHI_BWAMEM2.out.trace,
         SKA_SKETCH_TYPHI.out.trace,
         SKA_TYPE_WITH_PROFILE_TYPHI.out.trace,
         SKA_TYPE_NO_PROFILE_TYPHI.out.trace,
