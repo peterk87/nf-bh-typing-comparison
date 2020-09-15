@@ -93,7 +93,7 @@ include {
   } from './process/biohansel'
 include {
   BOWTIE2_INDEX;
-  GENOTYPHI;
+  GENOTYPHI_BOWTIE2;
   GENOTYPHI_BWAMEM2
   } from './process/genotyphi'
 include { 
@@ -121,7 +121,7 @@ workflow {
 
     Channel.fromPath(params.typhi_ref_fasta) | BOWTIE2_INDEX 
     // type with Genotyphi
-    ART_TYPHI.out | combine( BOWTIE2_INDEX.out ) | GENOTYPHI
+    ART_TYPHI.out | combine( BOWTIE2_INDEX.out ) | GENOTYPHI_BOWTIE2
     // type with Genotyphi using BWA-MEM2 read mapping
     ART_TYPHI.out | combine(Channel.fromPath(params.typhi_ref_fasta)) | GENOTYPHI_BWAMEM2
     // type with biohansel
@@ -152,7 +152,7 @@ workflow {
     ART_MTB.out | TB_PROFILER
   }
   if (params.typhi_input && params.mtb_input) {
-    GENOTYPHI.out.trace
+    GENOTYPHI_BOWTIE2.out.trace
       .mix(
         GENOTYPHI_BWAMEM2.out.trace,
         SKA_SKETCH_TYPHI.out.trace,
@@ -165,7 +165,7 @@ workflow {
         TB_PROFILER.out.trace)
       .set { ch_trace }
   } else if (params.typhi_input && !params.mtb_input) {
-    GENOTYPHI.out.trace
+    GENOTYPHI_BOWTIE2.out.trace
       .mix(
         GENOTYPHI_BWAMEM2.out.trace,
         SKA_SKETCH_TYPHI.out.trace,

@@ -13,11 +13,11 @@ process BOWTIE2_INDEX {
   """
 }
 
-process GENOTYPHI {
-  publishDir "${params.outdir}/typhi/genotyphi/results", 
+process GENOTYPHI_BOWTIE2 {
+  publishDir "${params.outdir}/typhi/genotyphi_bowtie2/results", 
              pattern: "*.tsv", 
              mode: 'copy'
-  publishDir "${params.outdir}/typhi/genotyphi/trace", 
+  publishDir "${params.outdir}/typhi/genotyphi_bowtie2/trace", 
              pattern: ".command.trace",
              saveAs: {"${sample_id}-${mincov}X.trace"},
              mode: 'copy'
@@ -35,13 +35,13 @@ process GENOTYPHI {
   tuple val(sample_id),
         val(organism),
         val(mincov),
-        val('genotyphi'),
+        val('genotyphi_bowtie2'),
         path('.command.trace'), emit: 'trace'
 
   script:
   sample_id = file(input_fasta).getBaseName()
   ref_id = file(ref_fasta).getBaseName()
-  genotyphi_out = "${sample_id}-${mincov}X-genotyphi.tsv"
+  genotyphi_out = "${sample_id}-${mincov}X-genotyphi_bowtie2.tsv"
   bt2_index = "${file(ref_index).getBaseName()}/${index_prefix}"
   bam = "${sample_id}.bam"
   """
@@ -49,7 +49,6 @@ process GENOTYPHI {
   bowtie2 \\
       -p ${task.cpus} \\
       -x $bt2_index \\
-      --local \\
       -1 ${reads[0]} \\
       -2 ${reads[1]} \\
     | samtools view -b -h -O BAM -F4 \\
@@ -64,16 +63,16 @@ process GENOTYPHI {
 }
 
 process GENOTYPHI_BWAMEM2 {
-  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/results", 
-             pattern: "*.tsv", 
+  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/results",
+             pattern: "*.tsv",
              mode: 'copy'
-  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/trace", 
+  publishDir "${params.outdir}/typhi/genotyphi_bwamem2/trace",
              pattern: ".command.trace",
              saveAs: {"${sample_id}-${mincov}X.trace"},
              mode: 'copy'
   input:
-  tuple path(input_fasta), 
-        val(organism), 
+  tuple path(input_fasta),
+        val(organism),
         val(mincov),
         path(reads),
         path(ref_fasta)
@@ -89,7 +88,7 @@ process GENOTYPHI_BWAMEM2 {
   script:
   sample_id = file(input_fasta).getBaseName()
   ref_id = file(ref_fasta).getBaseName()
-  genotyphi_out = "${sample_id}-${mincov}X-genotyphi.tsv"
+  genotyphi_out = "${sample_id}-${mincov}X-genotyphi_bwamem2.tsv"
   bam = "${sample_id}.bam"
   """
   echo "BWA MEM 2 mapping reads $reads"
